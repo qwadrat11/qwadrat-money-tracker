@@ -9,7 +9,7 @@ export const defaultCategories: Category[] = [
   { id: 'subscriptions', name: 'Подписки', icon: 'Repeat', color: '#404040', type: 'expense', isDefault: true },
   { id: 'shopping', name: 'Покупки', icon: 'ShoppingBag', color: '#737373', type: 'expense', isDefault: true },
   { id: 'car', name: 'Авто', icon: 'Car', color: '#525252', type: 'expense', isDefault: true },
-  { id: 'other', name: 'Другое', icon: 'CircleEllipsis', color: '#737373', type: 'both', isDefault: true },
+  { id: 'other', name: 'Другое', icon: 'CircleEllipsis', color: '#737373', type: 'expense', isDefault: true },
   { id: 'salary', name: 'Зарплата', icon: 'BriefcaseBusiness', color: '#262626', type: 'income', isDefault: true },
   { id: 'freelance', name: 'Фриланс', icon: 'Laptop', color: '#404040', type: 'income', isDefault: true },
 ]
@@ -123,6 +123,7 @@ function account(
     currency: 'USD',
     icon,
     color,
+    balance: startingBalance,
     startingBalance,
     archived: false,
     includeInTotalBalance: true,

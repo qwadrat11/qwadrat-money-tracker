@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { Account, AppSettings, Category, Transaction, TransactionType } from '../types'
 import { Button } from './ui/Button'
 import { Field, Input, Select, Textarea } from './ui/Field'
+import { getDefaultCategoryId, getTransferCategoryId } from '../utils/category'
 
 type Draft = Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>
 
@@ -28,7 +29,7 @@ export function TransactionForm({
       type: 'expense',
       date: new Date().toISOString().slice(0, 10),
       amount: 0,
-      categoryId: categories.find((item) => item.type !== 'income')?.id ?? 'other',
+      categoryId: getDefaultCategoryId(categories, 'expense'),
       accountId: firstAccount,
       toAccountId: activeAccounts.find((account) => account.id !== firstAccount)?.id,
       description: '',
@@ -40,7 +41,7 @@ export function TransactionForm({
 
   const availableCategories =
     draft.type === 'transfer'
-      ? categories.filter((category) => category.id === 'other' || category.type === 'both')
+      ? categories.filter((category) => category.type === 'expense')
       : categories.filter((category) => category.type === draft.type || category.type === 'both')
 
   return (
@@ -63,8 +64,8 @@ export function TransactionForm({
               type,
               categoryId:
                 type === 'transfer'
-                  ? 'other'
-                  : categories.find((item) => item.type === type || item.type === 'both')?.id ?? 'other',
+                  ? getTransferCategoryId(categories)
+                  : getDefaultCategoryId(categories, type),
             }))
           }}
         >

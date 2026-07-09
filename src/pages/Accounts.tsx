@@ -17,6 +17,7 @@ import type { Account, AccountBalance, AppSettings, Category, Transaction } from
 import { formatDate, formatMoney } from '../utils/format'
 import { cn } from '../utils/cn'
 import { useToast } from '../components/ui/toastContext'
+import { getDefaultCategoryId, getTransferCategoryId } from '../utils/category'
 
 type AccountDraft = Omit<Account, 'id' | 'createdAt' | 'updatedAt'>
 type AccountSettingsDraft = {
@@ -35,6 +36,7 @@ const emptyDraft: AccountDraft = {
   currency: 'USD',
   icon: 'CreditCard',
   color: '#525252',
+  balance: 0,
   startingBalance: 0,
   archived: false,
   includeInTotalBalance: true,
@@ -531,7 +533,7 @@ export function Accounts({
               type: 'transfer',
               date: new Date().toISOString().slice(0, 10),
               amount: 0,
-              categoryId: 'other',
+              categoryId: getTransferCategoryId(categories),
               accountId: transferAccount.id,
               toAccountId: activeAccounts.find((account) => account.id !== transferAccount.id)?.id ?? '',
               description: '',
@@ -543,7 +545,7 @@ export function Accounts({
             }}
             submitLabel="Создать перевод"
             onSubmit={async (transaction) => {
-              await addTransaction({ ...transaction, type: 'transfer', categoryId: 'other' })
+              await addTransaction({ ...transaction, type: 'transfer', categoryId: getTransferCategoryId(categories) })
               void tapHaptic('success')
               notify('Перевод создан')
               setTransferOpen(false)
@@ -582,8 +584,8 @@ export function Accounts({
               amount: 0,
               categoryId:
                 operationMode === 'income'
-                  ? categories.find((item) => item.type !== 'expense')?.id ?? 'other'
-                  : categories.find((item) => item.type !== 'income')?.id ?? 'other',
+                  ? getDefaultCategoryId(categories, 'income')
+                  : getDefaultCategoryId(categories, 'expense'),
               accountId: operationAccount.id,
               description: '',
               paymentMethod: operationMode === 'income' ? 'Пополнение' : 'Снятие',

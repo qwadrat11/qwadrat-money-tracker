@@ -1,4 +1,5 @@
 import type { Account, AppSettings, Category, ReceiptScanResult } from '../types'
+import { getDefaultCategoryId } from '../utils/category'
 
 type ParseReceiptInput = {
   file?: File
@@ -26,7 +27,7 @@ async function mockReceiptParser({ file, imageName, categories, accounts, settin
   const name = file?.name ?? imageName ?? 'receipt.jpg'
   const seed = name.length
   const total = 38 + seed * 2
-  const suggestedCategoryId = categories.find((category) => category.id === (seed % 2 === 0 ? 'food' : 'shopping'))?.id ?? categories[0]?.id ?? 'other'
+  const suggestedCategoryId = getDefaultCategoryId(categories, 'expense')
   const suggestedAccountId = accounts.find((account) => !account.archived)?.id ?? accounts[0]?.id ?? ''
 
   return {

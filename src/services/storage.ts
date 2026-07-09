@@ -32,6 +32,8 @@ export function loadState(): PersistedState {
     const defaults = getInitialState()
     const accounts = (parsed.accounts ?? defaults.accounts).map((account) => ({
       ...account,
+      balance: account.balance ?? account.startingBalance ?? 0,
+      startingBalance: account.startingBalance ?? account.balance ?? 0,
       archived: account.archived ?? false,
       includeInTotalBalance: account.includeInTotalBalance ?? true,
       icon: account.icon ?? 'Wallet',
@@ -62,6 +64,24 @@ export function loadState(): PersistedState {
     }
   } catch {
     return getInitialState()
+  }
+}
+
+export function loadLegacyState(): PersistedState | null {
+  try {
+    const raw = localStorage.getItem(KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as Partial<PersistedState>
+    return {
+      accounts: parsed.accounts ?? [],
+      transactions: parsed.transactions ?? [],
+      categories: parsed.categories ?? [],
+      users: parsed.users ?? [],
+      receiptScans: parsed.receiptScans ?? [],
+      settings: parsed.settings ?? getInitialState().settings,
+    }
+  } catch {
+    return null
   }
 }
 
@@ -290,7 +310,7 @@ export const financeRepository = {
 
 export function getAccountBalances(accounts: Account[], transactions: Transaction[], month = new Date().toISOString().slice(0, 7)): AccountBalance[] {
   return accounts.map((account) => {
-    let balance = account.startingBalance
+    let balance = account.balance ?? account.startingBalance ?? 0
     let monthlyIncome = 0
     let monthlyExpense = 0
 

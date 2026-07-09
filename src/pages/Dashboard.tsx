@@ -35,6 +35,7 @@ import { formatDate, formatMoney, monthLabel } from '../utils/format'
 import { cn } from '../utils/cn'
 import { tapHaptic } from '../services/haptics'
 import { useToast } from '../components/ui/toastContext'
+import { getDefaultCategoryId } from '../utils/category'
 
 type MetricKey = 'balance' | 'income' | 'expenses' | 'budget'
 type DashboardWidgetId =
@@ -316,10 +317,10 @@ export function Dashboard({
               type: quickActionMode,
               date: new Date().toISOString().slice(0, 10),
               amount: 0,
-              categoryId:
-                quickActionMode === 'income'
-                  ? categories.find((item) => item.type !== 'expense')?.id ?? 'other'
-                  : categories.find((item) => item.type !== 'income')?.id ?? 'other',
+                categoryId:
+                  quickActionMode === 'income'
+                    ? getDefaultCategoryId(categories, 'income')
+                    : getDefaultCategoryId(categories, 'expense'),
               accountId: defaultAccount.id,
               description: '',
               paymentMethod: settings.defaultPaymentMethod,

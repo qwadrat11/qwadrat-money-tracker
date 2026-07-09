@@ -13,6 +13,7 @@ export type Account = {
   currency: Currency
   icon: string
   color: string
+  balance: number
   startingBalance: number
   archived: boolean
   includeInTotalBalance: boolean
@@ -27,6 +28,8 @@ export type Category = {
   color: string
   type: TransactionType | 'both'
   isDefault: boolean
+  createdAt?: string
+  updatedAt?: string
 }
 
 export type Transaction = {
@@ -92,6 +95,8 @@ export type AppSettings = {
   defaultPaymentMethod: string
   hasSeenOnboarding: boolean
   dashboardWidgetOrder: string[]
+  users?: User[]
+  receiptScans?: ReceiptScanResult[]
 }
 
 export type AccountBalance = Account & {
