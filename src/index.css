@@ -1,0 +1,244 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --app-bg: #f5f5f7;
+  --app-bg-rgb: 245 245 247;
+  color-scheme: light;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Segoe UI", sans-serif;
+  background-color: var(--app-bg);
+  color: #171717;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dark {
+  --app-bg: #09090b;
+  --app-bg-rgb: 9 9 11;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  height: 100%;
+  min-height: 100%;
+  background-color: var(--app-bg);
+  font-size: 15px;
+  line-height: 1.55;
+  overscroll-behavior: none;
+  overflow-x: clip;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+html {
+  height: 100%;
+  min-height: 100%;
+  background-color: var(--app-bg);
+  overscroll-behavior: none;
+  overflow-x: clip;
+}
+
+#root {
+  height: 100%;
+  min-height: 100%;
+  background-color: var(--app-bg);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button,
+[role="button"] {
+  transition:
+    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+button:not(:disabled):active,
+[role="button"]:active {
+  transform: scale(0.98);
+}
+
+::selection {
+  background: rgba(24, 24, 27, 0.12);
+  color: inherit;
+}
+
+.ds-display {
+  font-size: clamp(2.2rem, 1.8rem + 1.8vw, 3.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+  font-weight: 600;
+}
+
+.ds-section-title {
+  font-size: 1.125rem;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+.ds-body {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.ds-caption {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+.ds-surface {
+  border: 1px solid rgba(161, 161, 170, 0.18);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 40px rgba(24, 24, 27, 0.05);
+  backdrop-filter: blur(24px);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .ds-surface {
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 10px 28px rgba(24, 24, 27, 0.04);
+    backdrop-filter: blur(14px);
+  }
+
+  html.dark .ds-surface,
+  .dark .ds-surface {
+    background: rgba(9, 9, 11, 0.88);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(14px);
+  }
+}
+
+html.dark .ds-surface,
+.dark .ds-surface {
+  border-color: rgba(63, 63, 70, 0.7);
+  background: rgba(9, 9, 11, 0.8);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-enter {
+  animation: enter 340ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-pop {
+  animation: pop 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-sheet {
+  animation: sheet-in 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-float {
+  animation: float-in 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.motion-soft {
+  transition:
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.motion-soft:active {
+  transform: scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-enter,
+  .animate-pop,
+  .animate-sheet,
+  .animate-float {
+    animation: none !important;
+  }
+}
+
+.safe-area-page {
+  height: 100%;
+  min-height: 100%;
+  background-color: var(--app-bg);
+  color: inherit;
+  isolation: isolate;
+}
+
+.ios-scroll {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  will-change: scroll-position;
+}
