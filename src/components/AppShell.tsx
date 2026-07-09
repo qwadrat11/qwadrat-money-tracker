@@ -19,6 +19,7 @@ import { cn } from '../utils/cn'
 import { tapHaptic } from '../services/haptics'
 import { Button } from './ui/Button'
 import { Modal } from './ui/Modal'
+import { useAuth } from '../auth/useAuth'
 
 export type PageKey = 'dashboard' | 'accounts' | 'transactions' | 'categories' | 'ai' | 'export' | 'admin' | 'settings'
 
@@ -49,8 +50,10 @@ export function AppShell({
   onThemeChange: (theme: AppSettings['theme']) => void
   children: React.ReactNode
 }) {
+  const { signOut } = useAuth()
   const [open, setOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
   const activeMobileIndex = primaryMobileNav.findIndex((item) => item.key === page)
   const activeMobilePosition = activeMobileIndex >= 0 ? activeMobileIndex : 0
   const sidebar = (
@@ -189,6 +192,27 @@ export function AppShell({
           </div>
           <ThemeButton settings={settings} onThemeChange={onThemeChange} />
         </div>
+        <Button
+          variant="secondary"
+          className="motion-soft mt-3 h-12 w-full justify-between rounded-[1.25rem] border-zinc-200/70 bg-white/80 px-4 text-[14px] font-medium text-zinc-950 dark:border-zinc-800/70 dark:bg-zinc-950/80 dark:text-zinc-50"
+          disabled={signingOut}
+          onClick={async () => {
+            void tapHaptic('selection')
+            setSigningOut(true)
+            let ok = false
+            try {
+              await signOut()
+              ok = true
+            } catch {
+            } finally {
+              setSigningOut(false)
+              if (ok) setMoreOpen(false)
+            }
+          }}
+        >
+          <span>Выйти из аккаунта</span>
+          <span className="text-zinc-400">{signingOut ? '...' : '↗'}</span>
+        </Button>
       </Modal>
     </div>
   )

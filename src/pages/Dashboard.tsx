@@ -146,7 +146,7 @@ export function Dashboard({
         openMetric,
         openQuickAction,
       }),
-    [totalBalance, income, expenses, budgetProgress, balanceHistory, daily, byCategory, recent, accountMap, categoryMap, settings.currency, settings.monthlyBudget],
+    [totalBalance, income, expenses, budgetProgress, balanceHistory, daily, byCategory, recent, accountMap, categoryMap, settings, onNavigate, openMetric, openQuickAction],
   )
   const overviewBlockIds = useMemo(() => overviewBlocks.map((block) => block.id), [overviewBlocks])
   const [overviewOrder, setOverviewOrder] = useState<DashboardWidgetId[]>(() => loadOverviewOrder(overviewBlockIds))

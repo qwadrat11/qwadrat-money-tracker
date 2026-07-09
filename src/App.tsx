@@ -1,4 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
+import { AuthScreen } from './auth/AuthScreen'
+import { useAuth } from './auth/useAuth'
 import { AppShell, type PageKey } from './components/AppShell'
 import { OnboardingModal } from './components/OnboardingModal'
 import { Card } from './components/ui/Card'
@@ -16,10 +18,38 @@ const Admin = lazy(() => import('./pages/Admin').then((module) => ({ default: mo
 const SettingsPage = lazy(() => import('./pages/Settings').then((module) => ({ default: module.SettingsPage })))
 
 function App() {
+  const { session, loading: authLoading } = useAuth()
   const [page, setPage] = useState<PageKey>('dashboard')
   const { accounts, transactions, categories, users, receiptScans, settings, actions, isLoading } = useFinanceStore()
   const accountBalances = getAccountBalances(accounts, transactions)
   const onboardingOpen = !settings.hasSeenOnboarding
+
+  if (authLoading) {
+    return (
+      <ToastProvider>
+        <div className="grid min-h-screen place-items-center bg-[var(--app-bg)]">
+          <Card className="animate-pop w-[min(360px,calc(100vw-2rem))]">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+              <div className="flex-1">
+                <div className="h-3 w-32 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                <div className="mt-2 h-2 w-48 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-900" />
+              </div>
+            </div>
+            <p className="mt-4 text-[13px] text-zinc-500">Загружаем локальные данные...</p>
+          </Card>
+        </div>
+      </ToastProvider>
+    )
+  }
+
+  if (!session) {
+    return (
+      <ToastProvider>
+        <AuthScreen />
+      </ToastProvider>
+    )
+  }
 
   if (isLoading) {
     return (
