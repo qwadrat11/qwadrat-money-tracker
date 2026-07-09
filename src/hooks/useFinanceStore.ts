@@ -53,22 +53,32 @@ export function useFinanceStore() {
   const { user } = useAuth()
   const userId = user?.id ?? null
   const queryClient = useQueryClient()
+  const [activeUserId, setActiveUserId] = useState<string | null>(null)
   const [migrationState, setMigrationState] = useState<MigrationState>({ status: 'idle' })
+
+  useEffect(() => {
+    if (activeUserId === userId) return
+
+    void queryClient.cancelQueries({ queryKey: financeKey, exact: false })
+    queryClient.removeQueries({ queryKey: financeKey, exact: false })
+    setMigrationState({ status: 'idle' })
+    setActiveUserId(userId)
+  }, [activeUserId, queryClient, userId])
 
   const query = useQuery({
     queryKey: [...financeKey, userId],
     queryFn: () => getUserData(),
-    enabled: Boolean(userId),
+    enabled: Boolean(userId && activeUserId === userId),
   })
 
-  const state = query.data ?? emptyFinanceState()
+  const state = activeUserId === userId ? query.data ?? emptyFinanceState() : emptyFinanceState()
 
   useEffect(() => {
     toggleTheme(state.settings.theme)
   }, [state.settings.theme])
 
   useEffect(() => {
-    if (!userId || !supabase) return
+    if (!userId || !supabase || activeUserId !== userId) return
 
     const channel = supabase.channel(`finance-sync:${userId}`)
     const tables = ['accounts', 'categories', 'transactions', 'budgets', 'app_settings'] as const
@@ -89,10 +99,10 @@ export function useFinanceStore() {
     return () => {
       void client.removeChannel(channel)
     }
-  }, [queryClient, userId])
+  }, [activeUserId, queryClient, userId])
 
   useEffect(() => {
-    if (!userId || !query.data) return
+    if (!userId || !query.data || activeUserId !== userId) return
 
     const legacy = loadLegacyState()
     const flagKey = `${migrationKeyPrefix}:${userId}`
@@ -111,7 +121,7 @@ export function useFinanceStore() {
       return
     }
     setMigrationState({ status: 'idle' })
-  }, [query.data, userId])
+  }, [activeUserId, query.data, userId])
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: [...financeKey, userId] })
 

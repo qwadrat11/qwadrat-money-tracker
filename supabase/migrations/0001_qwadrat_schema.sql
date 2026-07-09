@@ -218,7 +218,11 @@ set search_path = public
 as $$
 begin
   insert into public.profiles (id, email, display_name)
-  values (new.id, new.email, split_part(coalesce(new.email, 'qwadrat'), '@', 1))
+  values (
+    new.id,
+    new.email,
+    coalesce(nullif(split_part(coalesce(new.email, 'user'), '@', 1), ''), 'user')
+  )
   on conflict (id) do update set
     email = excluded.email,
     display_name = excluded.display_name,

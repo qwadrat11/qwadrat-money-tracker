@@ -63,11 +63,11 @@ export function AuthScreen() {
       </div>
 
       <div className="relative w-full max-w-[460px]">
-        <div className="mb-6 text-center">
+        <div className="mb-8 text-center">
           <div className="mx-auto grid h-16 w-16 place-items-center rounded-[1.75rem] bg-zinc-950 text-white shadow-[0_16px_40px_rgba(24,24,27,0.16)]">
             <WalletCards className="h-7 w-7" />
           </div>
-          <h1 className="mt-5 text-[38px] font-medium tracking-tight sm:text-[42px]">qwadrat</h1>
+          <h1 className="mt-5 text-[34px] font-medium tracking-tight sm:text-[38px]">Добро пожаловать</h1>
           <p className="mt-2 text-[16px] text-zinc-500">Личные финансы без хаоса</p>
         </div>
 
@@ -141,11 +141,7 @@ export function AuthScreen() {
                   />
                 )}
 
-                <Button
-                  type="submit"
-                  className="h-14 w-full rounded-[1.35rem] text-[15px] font-medium"
-                  disabled={loading === 'email' || !email.trim() || !password.trim() || (mode === 'sign-up' && !confirmPassword.trim())}
-                >
+                <Button type="submit" className="h-14 w-full rounded-[1.35rem] text-[15px] font-medium" disabled={loading === 'email' || !email.trim() || !password.trim() || (mode === 'sign-up' && !confirmPassword.trim())}>
                   {loading === 'email' ? 'Проверяем...' : mode === 'sign-in' ? 'Войти' : 'Создать аккаунт'}
                   {loading !== 'email' && <span className="text-[18px] leading-none">→</span>}
                 </Button>
@@ -167,6 +163,21 @@ function mapAuthError(error: unknown) {
   const message = error instanceof Error ? error.message : typeof error === 'string' ? error : ''
   const normalized = message.toLowerCase()
 
+  if (!normalized || message === 'Не удалось выполнить запрос. Проверьте данные и попробуйте еще раз') {
+    return 'Не удалось выполнить запрос. Попробуйте еще раз'
+  }
+  if (
+    message === 'Аккаунт с такой почтой уже существует' ||
+    message === 'Пароль должен быть минимум 6 символов' ||
+    message === 'Введите корректный email' ||
+    message === 'Проверьте почту для подтверждения аккаунта' ||
+    message === 'Неверный email или пароль' ||
+    message === 'Регистрация сейчас недоступна' ||
+    message === 'Слишком много попыток. Попробуйте позже' ||
+    message === 'Не удалось подключиться к Supabase'
+  ) {
+    return message
+  }
   if (normalized.includes('корректный email') || normalized.includes('invalid email')) return 'Введите корректный email'
   if (normalized.includes('minimum') || normalized.includes('6 символ') || normalized.includes('password')) {
     return 'Пароль должен быть минимум 6 символов'
@@ -178,5 +189,5 @@ function mapAuthError(error: unknown) {
   if (normalized.includes('network') || normalized.includes('fetch') || normalized.includes('failed to fetch')) {
     return 'Не удалось выполнить запрос'
   }
-  return 'Не удалось выполнить запрос. Попробуйте еще раз'
+  return message || 'Не удалось выполнить запрос. Попробуйте еще раз'
 }

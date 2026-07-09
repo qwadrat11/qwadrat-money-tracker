@@ -6,4 +6,12 @@ const supabaseAnonKey =
 
 export const hasSupabaseAuthConfig = Boolean(supabaseUrl && supabaseAnonKey)
 
+if (import.meta.env.DEV && !hasSupabaseAuthConfig) {
+  console.error('Supabase config missing', {
+    urlConfigured: Boolean(supabaseUrl),
+    anonKeyConfigured: Boolean(supabaseAnonKey),
+    message: 'Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local',
+  })
+}
+
 export const supabase = hasSupabaseAuthConfig ? createClient(supabaseUrl, supabaseAnonKey) : null

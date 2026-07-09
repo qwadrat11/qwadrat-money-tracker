@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { AuthLoader } from './auth/AuthLoader'
 import { AuthScreen } from './auth/AuthScreen'
 import { useAuth } from './auth/useAuth'
@@ -21,11 +22,13 @@ const SettingsPage = lazy(() => import('./pages/Settings').then((module) => ({ d
 
 function App() {
   const { session, loading: authLoading } = useAuth()
-  const [page, setPage] = useState<PageKey>('dashboard')
-  const { accounts, transactions, categories, users, receiptScans, settings, actions, isLoading, isError, error, migration, importLocalData, skipLocalDataImport } =
-    useFinanceStore()
-  const accountBalances = getAccountBalances(accounts, transactions)
-  const onboardingOpen = !settings.hasSeenOnboarding
+  const queryClient = useQueryClient()
+  const currentUserId = session?.user?.id ?? null
+
+  useEffect(() => {
+    void queryClient.cancelQueries({ queryKey: ['finance-state'], exact: false })
+    queryClient.removeQueries({ queryKey: ['finance-state'], exact: false })
+  }, [queryClient, currentUserId])
 
   if (authLoading) {
     return <AuthLoader />
@@ -39,50 +42,60 @@ function App() {
     )
   }
 
+  return (
+    <ToastProvider>
+      <AuthenticatedApp key={currentUserId ?? 'guest'} />
+    </ToastProvider>
+  )
+}
+
+function AuthenticatedApp() {
+  const [page, setPage] = useState<PageKey>('dashboard')
+  const { accounts, transactions, categories, users, receiptScans, settings, actions, isLoading, isError, error, migration, importLocalData, skipLocalDataImport } =
+    useFinanceStore()
+  const accountBalances = getAccountBalances(accounts, transactions)
+  const onboardingOpen = !settings.hasSeenOnboarding
+
   if (isLoading) {
     return (
-      <ToastProvider>
-        <div className="grid min-h-screen place-items-center bg-[var(--app-bg)]">
-          <Card className="animate-pop w-[min(360px,calc(100vw-2rem))]">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
-              <div className="flex-1">
-                <div className="h-3 w-32 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
-                <div className="mt-2 h-2 w-48 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-900" />
-              </div>
+      <div className="grid min-h-screen place-items-center bg-[var(--app-bg)]">
+        <Card className="animate-pop w-[min(360px,calc(100vw-2rem))]">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+            <div className="flex-1">
+              <div className="h-3 w-32 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+              <div className="mt-2 h-2 w-48 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-900" />
             </div>
-            <p className="mt-4 text-[13px] text-zinc-500">Загружаем данные...</p>
-          </Card>
-        </div>
-      </ToastProvider>
+          </div>
+          <p className="mt-4 text-[13px] text-zinc-500">Загружаем данные...</p>
+        </Card>
+      </div>
     )
   }
 
   if (isError) {
     return (
-      <ToastProvider>
-        <div className="grid min-h-screen place-items-center bg-[var(--app-bg)] px-4">
-          <Card className="animate-pop w-[min(420px,calc(100vw-2rem))] text-center">
-            <p className="text-[18px] font-medium text-zinc-950 dark:text-zinc-50">Не удалось загрузить данные</p>
-            <p className="mt-2 text-[14px] text-zinc-500 dark:text-zinc-400">
-              {error instanceof Error ? error.message : 'Проверьте соединение и попробуйте еще раз.'}
-            </p>
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-              <Button className="flex-1" onClick={() => void actions.resetDemoData()}>
-                Восстановить демо-данные
-              </Button>
-              <Button variant="secondary" className="flex-1" onClick={() => void window.location.reload()}>
-                Обновить
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </ToastProvider>
+      <div className="grid min-h-screen place-items-center bg-[var(--app-bg)] px-4">
+        <Card className="animate-pop w-[min(420px,calc(100vw-2rem))] text-center">
+          <p className="text-[18px] font-medium text-zinc-950 dark:text-zinc-50">Не удалось загрузить данные</p>
+          <p className="mt-2 text-[14px] text-zinc-500 dark:text-zinc-400">
+            {error instanceof Error ? error.message : 'Проверьте соединение и попробуйте еще раз.'}
+          </p>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <Button className="flex-1" onClick={() => void actions.resetDemoData()}>
+              Восстановить демо-данные
+            </Button>
+            <Button variant="secondary" className="flex-1" onClick={() => void window.location.reload()}>
+              Обновить
+            </Button>
+          </div>
+        </Card>
+      </div>
     )
   }
 
   return (
-    <ToastProvider>
+    <>
       {(migration.status === 'available' || migration.status === 'importing') && (
         <div className="fixed left-1/2 top-4 z-50 w-[min(560px,calc(100vw-1rem))] -translate-x-1/2">
           <Card className="animate-pop border border-zinc-200/70 bg-white/90 p-4 shadow-[0_18px_50px_rgba(24,24,27,0.12)] backdrop-blur-xl dark:border-zinc-800/70 dark:bg-zinc-950/90">
@@ -148,12 +161,12 @@ function App() {
             />
           )}
           {page === 'ai' && <AIScan accounts={accountBalances} categories={categories} settings={settings} addTransaction={actions.addTransaction} addReceiptScan={actions.addReceiptScan} />}
-          {page === 'export' && <ExportPage transactions={transactions} categories={categories} accounts={accounts} />}
+          {page === 'export' && <ExportPage transactions={transactions} categories={categories} accounts={accountBalances} />}
           {page === 'admin' && (
             <Admin
               users={users}
               categories={categories}
-              accounts={accounts}
+              accounts={accountBalances}
               receiptScans={receiptScans}
               transactions={transactions}
               settings={settings}
@@ -170,7 +183,7 @@ function App() {
         </Suspense>
       </AppShell>
       <OnboardingModal open={onboardingOpen} onClose={() => void actions.updateSettings({ ...settings, hasSeenOnboarding: true })} />
-    </ToastProvider>
+    </>
   )
 }
 

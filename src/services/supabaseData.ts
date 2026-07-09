@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase'
-import { defaultCategories, defaultSettings, demoAccounts, demoUsers } from '../data/demoData'
+import { defaultCategories, defaultSettings, demoUsers } from '../data/demoData'
 import type { Account, AppSettings, Category, Currency, ReceiptScanResult, Transaction, User } from '../types'
 import { normalizeCategoryType } from '../utils/category'
 
@@ -266,46 +266,6 @@ function mapBudget(row: BudgetRow | null | undefined) {
   }
 }
 
-function seedAccounts(userId: string) {
-  const base = new Date('2026-07-01T10:00:00.000Z')
-  return demoAccounts.map((account, index) => ({
-    id: crypto.randomUUID(),
-    user_id: userId,
-    name: account.name,
-    type: account.type,
-    balance: account.balance,
-    currency: account.currency,
-    icon: account.icon,
-    color: account.color,
-    is_archived: account.archived,
-    include_in_total: account.includeInTotalBalance,
-    created_at: new Date(base.getTime() + index * 1000).toISOString(),
-    updated_at: new Date(base.getTime() + index * 1000).toISOString(),
-  }))
-}
-
-function seedCategories(userId: string) {
-  const base = new Date('2026-07-01T11:00:00.000Z')
-  return defaultCategories.map((category, index) => ({
-    id: crypto.randomUUID(),
-    user_id: userId,
-    name: category.name,
-    type: normalizeCategoryType(category.type),
-    icon: category.icon,
-    color: category.color,
-    created_at: new Date(base.getTime() + index * 1000).toISOString(),
-    updated_at: new Date(base.getTime() + index * 1000).toISOString(),
-  }))
-}
-
-function seedSettings() {
-  return {
-    ...defaultSettings,
-    users: demoUsers,
-    receiptScans: [],
-  }
-}
-
 async function ensureProfile(userId: string, email: string) {
   const client = ensureSupabase()
   const profile = mapProfile(null, email)
@@ -323,49 +283,19 @@ async function ensureProfile(userId: string, email: string) {
 
 async function ensureSeedData(userId: string, email: string) {
   const client = ensureSupabase()
-  const [accountsResult, categoriesResult, budgetsResult, settingsResult] = await Promise.all([
-    client.from('accounts').select('id').eq('user_id', userId).limit(1),
-    client.from('categories').select('id').eq('user_id', userId).limit(1),
-    client.from('budgets').select('id').eq('user_id', userId).limit(1),
+  const [profileResult, settingsResult] = await Promise.all([
+    client.from('profiles').select('id').eq('id', userId).maybeSingle(),
     client.from('app_settings').select('id, data').eq('user_id', userId).limit(1),
   ])
 
-  if (accountsResult.error) throw toSupabaseError('Failed to load accounts seed probe', accountsResult.error)
-  if (categoriesResult.error) throw toSupabaseError('Failed to load categories seed probe', categoriesResult.error)
-  if (budgetsResult.error) throw toSupabaseError('Failed to load budgets seed probe', budgetsResult.error)
+  if (profileResult.error) throw toSupabaseError('Failed to load profile seed probe', profileResult.error)
   if (settingsResult.error) throw toSupabaseError('Failed to load app_settings seed probe', settingsResult.error)
 
-  const shouldSeedAccounts = (accountsResult.data?.length ?? 0) === 0
-  const shouldSeedCategories = (categoriesResult.data?.length ?? 0) === 0
-  const shouldSeedBudgets = (budgetsResult.data?.length ?? 0) === 0
   const shouldSeedSettings = (settingsResult.data?.length ?? 0) === 0
-  const wasSeeded = shouldSeedAccounts || shouldSeedCategories || shouldSeedBudgets || shouldSeedSettings
-
-  if (shouldSeedAccounts) {
-    const accounts = seedAccounts(userId)
-    const result = await client.from('accounts').insert(accounts)
-    if (result.error) throw toSupabaseError('Failed to seed accounts', result.error)
-  }
-
-  if (shouldSeedCategories) {
-    const categories = seedCategories(userId)
-    const result = await client.from('categories').insert(categories)
-    if (result.error) throw toSupabaseError('Failed to seed categories', result.error)
-  }
-
-  if (shouldSeedBudgets) {
-    const result = await client.from('budgets').insert({
-      user_id: userId,
-      month: currentMonth(),
-      limit_amount: defaultSettings.monthlyBudget,
-    })
-    if (result.error) throw toSupabaseError('Failed to seed budgets', result.error)
-  }
-
   if (shouldSeedSettings) {
     const result = await client.from('app_settings').insert({
       user_id: userId,
-      data: seedSettings(),
+      data: {},
     })
     if (result.error) throw toSupabaseError('Failed to seed app_settings', result.error)
   } else {
@@ -381,7 +311,7 @@ async function ensureSeedData(userId: string, email: string) {
   }
 
   await ensureProfile(userId, email)
-  return wasSeeded
+  return shouldSeedSettings
 }
 
 async function fetchRawData(userId: string, email: string) {
@@ -442,8 +372,15 @@ async function fetchRawData(userId: string, email: string) {
 
 export async function getUserData(_userId?: string): Promise<SupabaseFinanceState> {
   const user = await getAuthedUser()
+  if (import.meta.env.DEV) {
+    console.log('Current user:', user.id)
+  }
   const wasSeeded = await ensureSeedData(user.id, user.email ?? '')
   const state = await fetchRawData(user.id, user.email ?? '')
+  if (import.meta.env.DEV) {
+    console.log('Loaded accounts:', state.accounts.length)
+    console.log('Loaded transactions:', state.transactions.length)
+  }
   return {
     ...state,
     wasSeeded,
