@@ -8,6 +8,7 @@ export type AuthContextValue = {
   isConfigured: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string) => Promise<{ session: Session | null; user: User | null }>
+  signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
 }
 

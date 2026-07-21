@@ -1,17 +1,30 @@
 import type { Account, AppSettings, Category, Transaction, User } from '../types'
 
 export const defaultCategories: Category[] = [
-  { id: 'food', name: 'Еда', icon: 'Utensils', color: '#525252', type: 'expense', isDefault: true },
-  { id: 'transport', name: 'Транспорт', icon: 'Train', color: '#737373', type: 'expense', isDefault: true },
+  { id: 'food', name: 'Продукты', icon: 'Utensils', color: '#525252', type: 'expense', isDefault: true },
+  { id: 'cafes', name: 'Кафе и рестораны', icon: 'Coffee', color: '#737373', type: 'expense', isDefault: true },
+  { id: 'transport', name: 'Транспорт', icon: 'Train', color: '#404040', type: 'expense', isDefault: true },
+  { id: 'taxi', name: 'Такси', icon: 'Car', color: '#737373', type: 'expense', isDefault: true },
+  { id: 'car', name: 'Авто', icon: 'Car', color: '#5e5e5e', type: 'expense', isDefault: true },
   { id: 'home', name: 'Дом', icon: 'Home', color: '#404040', type: 'expense', isDefault: true },
-  { id: 'health', name: 'Здоровье', icon: 'HeartPulse', color: '#737373', type: 'expense', isDefault: true },
-  { id: 'entertainment', name: 'Развлечения', icon: 'Sparkles', color: '#525252', type: 'expense', isDefault: true },
-  { id: 'subscriptions', name: 'Подписки', icon: 'Repeat', color: '#404040', type: 'expense', isDefault: true },
-  { id: 'shopping', name: 'Покупки', icon: 'ShoppingBag', color: '#737373', type: 'expense', isDefault: true },
-  { id: 'car', name: 'Авто', icon: 'Car', color: '#525252', type: 'expense', isDefault: true },
+  { id: 'subscriptions', name: 'Подписки', icon: 'Repeat', color: '#6b7280', type: 'expense', isDefault: true },
+  { id: 'shopping', name: 'Одежда', icon: 'ShoppingBag', color: '#7c7f88', type: 'expense', isDefault: true },
+  { id: 'health', name: 'Здоровье', icon: 'HeartPulse', color: '#636363', type: 'expense', isDefault: true },
+  { id: 'entertainment', name: 'Развлечения', icon: 'Sparkles', color: '#737373', type: 'expense', isDefault: true },
+  { id: 'gifts', name: 'Подарки', icon: 'Gift', color: '#8a8a8a', type: 'expense', isDefault: true },
+  { id: 'travel', name: 'Путешествия', icon: 'PlaneTakeoff', color: '#5f6368', type: 'expense', isDefault: true },
+  { id: 'education', name: 'Образование', icon: 'BookOpen', color: '#616161', type: 'expense', isDefault: true },
+  { id: 'fees', name: 'Комиссии', icon: 'CircleEllipsis', color: '#8b8b8b', type: 'expense', isDefault: true },
   { id: 'other', name: 'Другое', icon: 'CircleEllipsis', color: '#737373', type: 'expense', isDefault: true },
   { id: 'salary', name: 'Зарплата', icon: 'BriefcaseBusiness', color: '#262626', type: 'income', isDefault: true },
   { id: 'freelance', name: 'Фриланс', icon: 'Laptop', color: '#404040', type: 'income', isDefault: true },
+  { id: 'business', name: 'Бизнес', icon: 'Landmark', color: '#525252', type: 'income', isDefault: true },
+  { id: 'investments', name: 'Инвестиции', icon: 'ChartColumn', color: '#6b7280', type: 'income', isDefault: true },
+  { id: 'crypto', name: 'Крипто', icon: 'Bitcoin', color: '#5e5e5e', type: 'income', isDefault: true },
+  { id: 'refund', name: 'Возврат', icon: 'Repeat', color: '#7c7f88', type: 'income', isDefault: true },
+  { id: 'gift_income', name: 'Подарок', icon: 'Gift', color: '#8a8a8a', type: 'income', isDefault: true },
+  { id: 'sales', name: 'Продажа', icon: 'BadgeDollarSign', color: '#6f6f6f', type: 'income', isDefault: true },
+  { id: 'other_income', name: 'Другое', icon: 'CircleEllipsis', color: '#737373', type: 'income', isDefault: true },
 ]
 
 export const demoUsers: User[] = [
@@ -45,11 +58,12 @@ export const demoTransactions: Transaction[] = [
 export const defaultSettings: AppSettings = {
   monthlyBudget: 3600,
   currency: 'USD',
+  baseCurrency: 'USD',
   theme: 'light',
-  workspaceName: 'Ledger OS',
+  workspaceName: 'qwadrat Finance Tracker',
   defaultPaymentMethod: 'Apple Pay',
   hasSeenOnboarding: false,
-  dashboardWidgetOrder: ['balance', 'expenses', 'income', 'budget', 'quick-actions', 'daily-spending', 'categories', 'balance-history', 'recent-activity'],
+  dashboardWidgetOrder: ['balance', 'quick-actions', 'expenses', 'income', 'turnover', 'recent-activity', 'categories'],
 }
 
 export function generateDemoTransactions(): Transaction[] {

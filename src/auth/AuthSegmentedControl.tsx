@@ -1,34 +1,40 @@
-import { cn } from '../utils/cn'
+import { cn } from "../utils/cn";
+import { useTranslation } from "react-i18next";
 
 export function AuthSegmentedControl({
   value,
   onChange,
 }: {
-  value: 'sign-in' | 'sign-up'
-  onChange: (value: 'sign-in' | 'sign-up') => void
+  value: "sign-in" | "sign-up";
+  onChange: (value: "sign-in" | "sign-up") => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="grid grid-cols-2 rounded-full bg-zinc-100 p-1 dark:bg-zinc-900">
       <button
         type="button"
         className={cn(
-          'h-11 rounded-full text-[14px] font-medium transition',
-          value === 'sign-in' ? 'bg-white text-zinc-950 shadow-sm dark:bg-zinc-950 dark:text-zinc-50' : 'text-zinc-500',
+          "h-11 rounded-full text-[14px] font-medium transition",
+          value === "sign-in"
+            ? "bg-white text-zinc-950 shadow-sm dark:bg-zinc-950 dark:text-zinc-50"
+            : "text-zinc-500"
         )}
-        onClick={() => onChange('sign-in')}
+        onClick={() => onChange("sign-in")}
       >
-        Вход
+        {t("auth.login")}
       </button>
       <button
         type="button"
         className={cn(
-          'h-11 rounded-full text-[14px] font-medium transition',
-          value === 'sign-up' ? 'bg-white text-zinc-950 shadow-sm dark:bg-zinc-950 dark:text-zinc-50' : 'text-zinc-500',
+          "h-11 rounded-full text-[14px] font-medium transition",
+          value === "sign-up"
+            ? "bg-white text-zinc-950 shadow-sm dark:bg-zinc-950 dark:text-zinc-50"
+            : "text-zinc-500"
         )}
-        onClick={() => onChange('sign-up')}
+        onClick={() => onChange("sign-up")}
       >
-        Регистрация
+        {t("auth.registration")}
       </button>
     </div>
-  )
+  );
 }

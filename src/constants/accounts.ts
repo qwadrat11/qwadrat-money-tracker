@@ -5,6 +5,7 @@ export const accountTypeLabels: Record<AccountType, string> = {
   bank_card: 'Банковская карта',
   savings: 'Накопления',
   crypto: 'Крипто',
+  crypto_portfolio: 'Криптопортфель',
   credit_card: 'Кредитная карта',
   other: 'Другое',
 }

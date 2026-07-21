@@ -25,7 +25,7 @@ import {
 import type { Account, AppSettings, Category, ReceiptScanResult, Transaction, User } from '../types'
 
 const financeKey = ['finance-state']
-const migrationKeyPrefix = 'qwadrat:migration'
+const migrationKeyPrefix = 'qwadrat-finance-tracker:migration'
 
 type MigrationState = {
   status: 'idle' | 'available' | 'importing' | 'skipped' | 'done'
@@ -37,9 +37,9 @@ function emptyFinanceState(): SupabaseFinanceState {
     accounts: [],
     categories: [],
     transactions: [],
-    settings: defaultSettings,
-    users: defaultSettings.users ?? [],
-    receiptScans: defaultSettings.receiptScans ?? [],
+    settings: { ...defaultSettings, monthlyBudget: 0 },
+    users: [],
+    receiptScans: [],
     budget: null,
     wasSeeded: false,
   }
@@ -310,7 +310,7 @@ export function useFinanceStore() {
 
   return {
     ...state,
-    isLoading: query.isLoading && !query.data,
+    isLoading: Boolean(userId) && activeUserId !== userId || (query.isLoading && !query.data),
     isError: query.isError,
     error: query.error,
     migration: migrationState,

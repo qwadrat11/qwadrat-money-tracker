@@ -1,11 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { SplashScreen } from '@capacitor/splash-screen'
-import './index.css'
-import App from './App'
-import { AuthProvider } from './auth/AuthProvider'
-import { ErrorBoundary } from './components/ErrorBoundary'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SplashScreen } from "@capacitor/splash-screen";
+import "./index.css";
+import { AuthProvider } from "./auth/AuthProvider";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import "./i18n";
+import { LocaleProvider } from "./i18n/LocaleProvider";
+import { LocalizedApp } from "./i18n/LocalizedApp";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,18 +16,20 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
-})
+});
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ErrorBoundary>
-          <App />
-        </ErrorBoundary>
+        <LocaleProvider>
+          <ErrorBoundary>
+            <LocalizedApp />
+          </ErrorBoundary>
+        </LocaleProvider>
       </AuthProvider>
     </QueryClientProvider>
-  </StrictMode>,
-)
+  </StrictMode>
+);
 
-void SplashScreen.hide({ fadeOutDuration: 220 }).catch(() => undefined)
+void SplashScreen.hide({ fadeOutDuration: 220 }).catch(() => undefined);

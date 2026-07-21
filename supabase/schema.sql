@@ -41,7 +41,8 @@ create table if not exists public.categories (
   icon text,
   color text,
   created_at timestamptz default now(),
-  updated_at timestamptz default now()
+  updated_at timestamptz default now(),
+  unique (user_id, name, type)
 );
 
 create table if not exists public.transactions (

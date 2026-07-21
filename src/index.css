@@ -6,13 +6,19 @@
   --app-bg: #f5f5f7;
   --app-bg-rgb: 245 245 247;
   color-scheme: light;
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display",
-    "Segoe UI", sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
   background-color: var(--app-bg);
   color: #171717;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  --mobile-tabbar-height: 3.75rem;
+  --mobile-nav-height: var(--mobile-tabbar-height);
+  --mobile-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --mobile-content-bottom-space: calc(
+    var(--mobile-tabbar-height) + var(--mobile-safe-bottom) + 1.5rem
+  );
+  --mobile-page-gutter: 1rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -68,8 +74,7 @@ button {
 
 button,
 [role="button"] {
-  transition:
-    transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
     opacity 220ms cubic-bezier(0.16, 1, 0.3, 1),
     background-color 220ms cubic-bezier(0.16, 1, 0.3, 1),
     border-color 220ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -203,8 +208,7 @@ html.dark .ds-surface,
 }
 
 .motion-soft {
-  transition:
-    transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
     opacity 260ms cubic-bezier(0.16, 1, 0.3, 1),
     background-color 260ms cubic-bezier(0.16, 1, 0.3, 1),
     border-color 260ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -241,4 +245,46 @@ html.dark .ds-surface,
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   will-change: scroll-position;
+}
+
+@media (max-width: 639px) {
+  body {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .ds-display {
+    font-size: 2.35rem;
+    line-height: 1.03;
+    letter-spacing: -0.045em;
+  }
+  .ds-section-title {
+    font-size: 1.25rem;
+    line-height: 1.22;
+  }
+  .ds-body {
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  .ds-caption {
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+  .ios-scroll {
+    scroll-padding-bottom: var(--mobile-content-bottom-space);
+  }
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+  select {
+    min-height: 44px;
+  }
+  button,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .overviewBlocksGrid {
+    gap: 1.25rem;
+  }
 }

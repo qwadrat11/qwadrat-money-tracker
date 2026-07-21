@@ -17,9 +17,9 @@ export function Button({ className, variant = 'primary', size = 'md', ...props }
           'border border-zinc-200/70 bg-white text-zinc-900 shadow-[0_10px_24px_rgba(24,24,27,0.05)] hover:bg-zinc-50 dark:border-zinc-800/70 dark:bg-zinc-950 dark:text-zinc-50 dark:hover:bg-zinc-900',
         variant === 'ghost' && 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900',
         variant === 'danger' && 'bg-zinc-950 text-white shadow-[0_10px_26px_rgba(24,24,27,0.14)] hover:bg-zinc-800 dark:bg-white dark:text-zinc-950',
-        size === 'sm' && 'h-9 px-3 text-[13px]',
-        size === 'md' && 'h-12 px-5 text-[14px]',
-        size === 'icon' && 'h-11 w-11',
+        size === 'sm' && 'h-11 px-4 text-[14px] sm:h-9 sm:px-3 sm:text-[13px]',
+        size === 'md' && 'h-14 px-5 text-[16px] sm:h-12 sm:text-[14px]',
+        size === 'icon' && 'h-12 w-12 sm:h-11 sm:w-11',
         className,
       )}
       {...props}
